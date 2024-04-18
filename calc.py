@@ -20,7 +20,11 @@ class Calculator:
         self.window = tk.Tk()
         self.window.geometry("375x667")
         self.window.resizable(0, 0)
-        self.window.title("Kalkulator (Tekan H unuk masuk history)")
+        self.window.title("Zenith Calc (Tekan H unuk masuk history)")
+
+        icon_path = "ikon.png"
+        self.icon = tk.PhotoImage(file=icon_path)
+        self.window.iconphoto(True, self.icon)
 
         self.total_expression = ""
         self.current_expression = ""

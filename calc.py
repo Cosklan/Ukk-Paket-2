@@ -92,7 +92,7 @@ class Calculator:
 
 
     def export_to_pdf(self, history_listbox):
-        file_name = simpledialog.askstring("Export", "Masukan nama pdf:")
+        file_name = simpledialog.askstring("Export", "Masukan nama PDF:")
         if file_name:
             pdf_file = f"{file_name}.pdf"
             c = canvas.Canvas(pdf_file)
@@ -141,7 +141,7 @@ class Calculator:
             button.grid(row=grid_value[0],column=grid_value[1],sticky=tk.NSEW)
         
     def append_operator(self, operator):
-        if self.current_expression:  # Check if there's an expression
+        if self.current_expression:  
             if self.current_expression[-1] not in self.operations:
                 self.current_expression += operator
                 self.total_expression += self.current_expression
@@ -193,7 +193,7 @@ class Calculator:
         operation = self.total_expression + self.current_expression
         try:
             result = str(eval(operation))
-            self.add_to_history(operation, result)  # Pass operation and result to add_to_history
+            self.add_to_history(operation, result) 
             self.current_expression = result
             self.total_expression = ""
         except Exception as e:
@@ -224,7 +224,22 @@ class Calculator:
     
     
     def update_label(self):
-        self.label.config(text=self.current_expression[:11])
+        result = self.current_expression[:11]
+        try:
+            # Try converting the result to float
+            result_float = float(result)
+            # Check if the float is equivalent to its integer representation
+            if result_float == int(result_float):
+                # If yes, convert it to integer
+                result = str(int(result_float))
+            else:
+                # If not, keep it as float
+                result = str(result_float)
+        except ValueError:
+            # If conversion to float fails, keep the original result
+            pass
+        self.label.config(text=result)
+
     def run(self):
         self.window.mainloop()
 

@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
 from reportlab.pdfgen import canvas
+import numpy as np
 
 LARGE_FONT_STYLE = ("Arial", 40, "bold")
 SMALL_FONT_STYLE = ("Arial", 16)
@@ -30,10 +31,10 @@ class Calculator:
         self.total_label, self.label = self.create_display_labels()
 
         self.digits = {
-            7: (1, 1), 8: (1, 2), 9: (1, 3),
-            4: (2, 1), 5: (2, 2), 6: (2, 3),
-            1: (3, 1), 2: (3, 2), 3: (3, 3),
-            0: (4, 2), ".": (4, 1)
+            7: (1, 1, 1), 8: (1, 2, 1), 9: (1, 3, 1),
+            4: (2, 1, 1), 5: (2, 2, 1), 6: (2, 3, 1),
+            1: (3, 1, 1), 2: (3, 2, 1), 3: (3, 3, 1),
+            0: (4, 2, 1), ".": (4, 0, 2)
         }
         self.operations = {"/": "\u00F7", "*": "\u00D7", "-": "-", "+": "+"}
         self.buttons_frame = self.create_buttons_frame()
@@ -112,7 +113,32 @@ class Calculator:
         self.create_equals_button()
         self.create_pangkat_button()
         self.create_akar_button()
+        self.create_trig_buttons()
 
+    def create_trig_buttons(self):
+        # Create sin button
+        sin_button = tk.Button(self.buttons_frame, text="sin", bg=OFF_WHITE, fg=LABEL_COLOR, font=DEFAULT_FONT_STYLE,
+                               borderwidth=0, command=lambda: self.trig_operation(np.sin))
+        sin_button.grid(row=1, column=0, sticky=tk.NSEW)
+
+        # Create cos button
+        cos_button = tk.Button(self.buttons_frame, text="cos", bg=OFF_WHITE, fg=LABEL_COLOR, font=DEFAULT_FONT_STYLE,
+                               borderwidth=0, command=lambda: self.trig_operation(np.cos))
+        cos_button.grid(row=2, column=0, sticky=tk.NSEW)
+
+        # Create tan button
+        tan_button = tk.Button(self.buttons_frame, text="tan", bg=OFF_WHITE, fg=LABEL_COLOR, font=DEFAULT_FONT_STYLE,
+                               borderwidth=0, command=lambda: self.trig_operation(np.tan))
+        tan_button.grid(row=3, column=0, sticky=tk.NSEW)
+
+    def trig_operation(self, func):
+        try:
+            result = func(float(self.current_expression))
+            self.current_expression = str(result)
+            self.update_label()
+        except ValueError:
+            self.current_expression = "Error"
+            self.update_label()
     def create_display_labels(self):
         total_label = tk.Label(self.display_frame, text=self.total_expression, anchor=tk.E, bg=LIGHT_GRAY,
                                fg=LABEL_COLOR, padx=24, font=SMALL_FONT_STYLE)
@@ -134,10 +160,12 @@ class Calculator:
         self.update_label()
 
     def create_digit_buttons(self):
-        for digit, grid_value in self.digits.items():
-            button = tk.Button(self.buttons_frame, text=str(digit), bg=WHITE, fg=LABEL_COLOR, font=DEFAULT_FONT_STYLE,
-                               borderwidth=0, command=lambda x=digit: self.add_to_expression(x))
-            button.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
+        for key, value in self.digits.items():
+            row, column, columnspan = value
+            button = tk.Button(self.buttons_frame, text=str(key), bg=WHITE, fg=LABEL_COLOR, font=DEFAULT_FONT_STYLE,
+                            borderwidth=0, command=lambda x=key: self.add_to_expression(x))
+            button.grid(row=row, column=column, columnspan=columnspan, sticky=tk.NSEW)
+
 
     def append_operator(self, operator):
         if self.current_expression:
@@ -165,7 +193,7 @@ class Calculator:
     def create_clear_button(self):
         button = tk.Button(self.buttons_frame, text="C", bg=OFF_WHITE, fg=LABEL_COLOR, font=DEFAULT_FONT_STYLE,
                             borderwidth=0, command=self.clear)
-        button.grid(row=0, column=1, sticky=tk.NSEW)
+        button.grid(row=0, column=0, columnspan=2, sticky=tk.NSEW)
 
     def pangkat(self):
         self.current_expression = str(eval(f"{self.current_expression}**2"))
